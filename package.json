@@ -8,6 +8,9 @@
     "type": "git",
     "url": "https://github.com/ningod/antartica-peril-bot"
   },
+  "engines": {
+    "node": ">=22.22.0"
+  },
   "type": "module",
   "scripts": {
     "build": "tsc",
