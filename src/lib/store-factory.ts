@@ -3,11 +3,11 @@
  *
  * - "memory" (default): MemoryPericoloStore — no external dependencies.
  * - "redis": RedisPericoloStore — requires UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN.
- *   (Not yet implemented; placeholder for future extension.)
  */
 
 import type { IPericoloStore } from './store-interface.js';
 import { MemoryPericoloStore } from './store.js';
+import { RedisPericoloStore, createRedisClient, DEFAULT_KEY_PREFIX } from './redis-store.js';
 import { logger } from './logger.js';
 
 /** Parse session TTL from SESSION_TTL_HOURS env var. Default: 6 hours. */
@@ -31,15 +31,21 @@ export function createStore(): IPericoloStore {
   const sessionTtlMs = parseSessionTtlMs();
 
   if (backend === 'redis') {
-    // Redis support is planned but not yet implemented.
-    // Fall back to memory with a warning so the bot still starts.
-    logger.warn('redis-not-implemented', {
-      message:
-        'STORAGE_BACKEND=redis is not yet implemented for antartica-peril-bot. ' +
-        'Falling back to memory store. Sessions will not persist across restarts.',
-    });
-    logger.info('storage-backend', { backend: 'memory', sessionTtlMs });
-    return new MemoryPericoloStore(sessionTtlMs);
+    const url = process.env.UPSTASH_REDIS_REST_URL;
+    const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+    if (!url || !token) {
+      logger.warn('redis-missing-credentials', {
+        message:
+          'STORAGE_BACKEND=redis requires UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN. ' +
+          'Falling back to memory store.',
+      });
+      logger.info('storage-backend', { backend: 'memory', sessionTtlMs });
+      return new MemoryPericoloStore(sessionTtlMs);
+    }
+    const keyPrefix = (process.env.UPSTASH_REDIS_KEY_PREFIX ?? DEFAULT_KEY_PREFIX).trim() || DEFAULT_KEY_PREFIX;
+    const redis = createRedisClient(url, token);
+    logger.info('storage-backend', { backend: 'redis', sessionTtlMs, keyPrefix });
+    return new RedisPericoloStore(redis, sessionTtlMs, keyPrefix);
   }
 
   if (backend !== 'memory') {

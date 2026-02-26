@@ -23,6 +23,7 @@ src/
     domain.ts          Label types, drawFromBag, resolveLabel, resolveUncertainDraws, sanitizeText
     store-interface.ts IPericoloStore, PericoloSession, ThreatPool, ExplorerProfile, ExplorerTag
     store.ts           MemoryPericoloStore (6h session TTL, 10min sweep; profiles never expire)
+    redis-store.ts     RedisPericoloStore (Upstash REST; TTL via Redis EX; configurable key prefix)
     store-factory.ts   createStore() — selects backend from env
     config.ts          Legal URL config
     logger.ts          Structured JSON logger
@@ -189,7 +190,16 @@ interface IPericoloStore {
 
 `MemoryPericoloStore`: Map-based, session TTL = 6h, sweep every 10 min.
 Threat pools, language prefs, and Explorer profiles never expire.
-Redis backend: planned, not yet implemented.
+
+`RedisPericoloStore`: Upstash REST client. Sessions use Redis `EX` TTL (recalculated
+from `createdAt` on every write). Threat pools, language prefs, and Explorer profiles
+have no TTL. Explorer channel membership tracked via a Redis Set
+(`{prefix}:explorers-ch:{channelId}`).
+
+**Key prefix** — All Redis keys are namespaced with a configurable prefix
+(env `UPSTASH_REDIS_KEY_PREFIX`, default `antartica`). This allows multiple
+applications on Fly.io to share a single Upstash instance without key collisions.
+Key format: `{prefix}:<type>:<id>` (e.g. `antartica:session:1234567890`).
 
 ## Security Invariants
 

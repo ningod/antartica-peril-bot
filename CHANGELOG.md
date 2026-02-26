@@ -61,6 +61,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   verification via `crypto.subtle`)
 - In-memory store — no external dependencies; session TTL 6 h with 10-minute sweep; Explorer
   profiles and Threat Pools never expire
+- **Redis store** (`STORAGE_BACKEND=redis`) — Upstash REST client; sessions use Redis native TTL
+  (recalculated from `createdAt` on every write); Explorer profiles and Threat Pools have no TTL;
+  Explorer channel membership tracked via a Redis Set for efficient `getExplorerProfilesForChannel`
+- **Redis key prefix** (`UPSTASH_REDIS_KEY_PREFIX`, default `antartica`) — namespaces all Redis
+  keys so multiple applications can share a single Upstash instance without key collisions
+- `discord-api-types` moved to `dependencies` (was `devDependencies`); required at runtime in
+  HTTP mode for interaction type enums
 - Sliding-window rate limiter: 5 actions / 10 s per user
 - Multilingual UI: Italian (default) and English translation bundles; per-channel preference
 - Input sanitization against `@mention` injection on all user-provided text

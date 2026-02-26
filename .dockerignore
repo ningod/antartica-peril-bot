@@ -3,6 +3,7 @@
 .git
 .gitignore
 .github
+.claude
 .vscode
 node_modules
 dist
@@ -11,3 +12,6 @@ coverage
 *.md
 tests/
 .claude/
+*.tmp
+*.temp
+*.pdf
