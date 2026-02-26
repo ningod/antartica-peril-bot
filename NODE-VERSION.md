@@ -5,9 +5,9 @@ and explains how to update them when a new version is adopted.
 
 ## Source of truth
 
-| File | Field | Current value |
-|------|-------|---------------|
-| [`.nvmrc`](.nvmrc) | plain text | `22.22.0` |
+| File               | Field      | Current value |
+| ------------------ | ---------- | ------------- |
+| [`.nvmrc`](.nvmrc) | plain text | `22.22.0`     |
 
 **`.nvmrc` is the canonical source of truth.** All other references must be kept in sync
 with it every time the version is bumped.
@@ -94,6 +94,7 @@ It uses major-only strings so GitHub Actions automatically resolves them to the 
 available patch for each major — **no manual update is needed on a patch bump**.
 
 Update this list only when:
+
 - a new LTS major is added to the support matrix, or
 - an old LTS major is dropped.
 
