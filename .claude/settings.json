@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "deny": [
+      { "type": "read", "path": ".env" },
+      { "type": "write", "path": ".env" },
+      { "type": "read", "path": ".env.local" },
+      { "type": "write", "path": ".env.local" },
+      { "type": "read", "path": ".env.production" },
+      { "type": "write", "path": ".env.production" },
+      { "type": "read", "path": ".env.development" },
+      { "type": "write", "path": ".env.development" },
+      { "type": "read", "path": "dist/" },
+      { "type": "write", "path": "dist/" },
+      { "type": "read", "path": "node_modules/" },
+      { "type": "write", "path": "node_modules/" },
+      { "type": "bash", "pattern": ".*\\.env.*" }
+    ],
+    "allow": [
+      { "type": "read", "path": ".env.example" },
+      { "type": "write", "path": ".env.example" }
+    ]
+  }
+}

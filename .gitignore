@@ -28,3 +28,4 @@ npm-debug.log*
 *.tmp
 *.temp
 *.pdf
+/.claude/settings.local.json

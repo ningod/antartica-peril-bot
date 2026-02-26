@@ -1,0 +1,13 @@
+.env
+.env.*
+.git
+.gitignore
+.github
+.vscode
+node_modules
+dist
+coverage
+*.log
+*.md
+tests/
+.claude/
