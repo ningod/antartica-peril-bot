@@ -556,9 +556,7 @@ async function handleAdd(
   let posSide: string | undefined;
   let negSide: string | undefined;
 
-  if (labelType === 'rassegnazione') {
-    text = ''; // intentionally empty
-  } else {
+  if (labelType !== 'rassegnazione') {
     const rawText = interaction.options.getString('text');
     if (!rawText?.trim()) {
       await interaction.editReply({
