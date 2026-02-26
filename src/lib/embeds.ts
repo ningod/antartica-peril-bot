@@ -186,15 +186,15 @@ export function buildDrawEmbed(opts: DrawEmbedOptions, tr: Tr): EmbedBuilder {
     .setColor(severeConsequences ? Colors.DarkRed : Colors.Blue)
     .addFields({ name: tr.fieldObjective, value: session.objective });
 
+  embed.addFields({
+    name: tr.fieldBaseDraws(baseDraws.length),
+    value: baseDraws.map((d) => labelLine(d, tr)).join('\n') || tr.descNoDraws,
+  });
+
   if (pushDraws.length > 0) {
     embed.addFields({
-      name: tr.fieldAllDraws(allDraws.length),
-      value: allDraws.map((d) => labelLine(d, tr)).join('\n') || tr.descNoDraws,
-    });
-  } else {
-    embed.addFields({
-      name: tr.fieldBaseDraws(baseDraws.length),
-      value: baseDraws.map((d) => labelLine(d, tr)).join('\n') || tr.descNoDraws,
+      name: tr.fieldPushDraws(pushDraws.length),
+      value: pushDraws.map((d) => labelLine(d, tr)).join('\n') || tr.descNoDraws,
     });
   }
 
@@ -252,18 +252,18 @@ export function buildSessionEndEmbed(
       }
     );
 
-  if (allDraws.length > 0) {
-    if (resolvedPush.length > 0) {
-      embed.addFields({
-        name: tr.fieldAllDraws(allDraws.length),
-        value: allDraws.map((d) => labelLine(d, tr)).join('\n'),
-      });
-    } else {
-      embed.addFields({
-        name: tr.fieldBaseDraws(resolvedBase.length),
-        value: resolvedBase.map((d) => labelLine(d, tr)).join('\n'),
-      });
-    }
+  if (resolvedBase.length > 0) {
+    embed.addFields({
+      name: tr.fieldBaseDraws(resolvedBase.length),
+      value: resolvedBase.map((d) => labelLine(d, tr)).join('\n'),
+    });
+  }
+
+  if (resolvedPush.length > 0) {
+    embed.addFields({
+      name: tr.fieldPushDraws(resolvedPush.length),
+      value: resolvedPush.map((d) => labelLine(d, tr)).join('\n'),
+    });
   }
 
   if (flips.length > 0) {

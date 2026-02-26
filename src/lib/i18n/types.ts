@@ -36,6 +36,8 @@ export interface Tr {
   fieldAllDraws: (n: number) => string;
   /** e.g. "Estrazioni Base (3)" */
   fieldBaseDraws: (n: number) => string;
+  /** e.g. "Estrazioni Superarsi (1)" */
+  fieldPushDraws: (n: number) => string;
   fieldPositives: string;
   fieldNegatives: string;
   fieldUncertain: string;

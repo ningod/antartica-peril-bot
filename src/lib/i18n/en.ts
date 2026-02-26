@@ -29,6 +29,7 @@ export const enTranslations: Tr = {
   fieldAllLabels: 'Full list',
   fieldAllDraws: (n) => `All Draws (${n})`,
   fieldBaseDraws: (n) => `Base Draws (${n})`,
+  fieldPushDraws: (n) => `Push Draws (${n})`,
   fieldPositives: '✨ Positives',
   fieldNegatives: '💀 Negatives',
   fieldUncertain: '❓ Uncertain',

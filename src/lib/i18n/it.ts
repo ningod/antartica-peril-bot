@@ -26,6 +26,7 @@ export const itTranslations: Tr = {
   fieldAllLabels: 'Lista completa',
   fieldAllDraws: (n) => `Tutte le Estrazioni (${n})`,
   fieldBaseDraws: (n) => `Estrazioni Base (${n})`,
+  fieldPushDraws: (n) => `Estrazioni Superarsi (${n})`,
   fieldPositives: '✨ Positivi',
   fieldNegatives: '💀 Negativi',
   fieldUncertain: '❓ Incerti',
