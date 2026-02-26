@@ -230,7 +230,13 @@ function createInteractionHandler(
         }
       } else if (commandName === 'peril') {
         // Extract options from the raw autocomplete payload (subcommand structure)
-        interface RawOption { type: number; name: string; value?: string; focused?: boolean; options?: RawOption[] }
+        interface RawOption {
+          type: number;
+          name: string;
+          value?: string;
+          focused?: boolean;
+          options?: RawOption[];
+        }
         const rawOpts = (data as unknown as { data: { options?: RawOption[] } }).data.options ?? [];
         const addSub = rawOpts.find(
           // 1 = ApplicationCommandOptionType.Subcommand

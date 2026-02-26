@@ -162,6 +162,7 @@ add-label-modal:<channelId>:<type>     — Modal form custom_id; deferReply (eph
 All IDs ≤ 100 chars. Example: `push:2:1234567890123456789` = 26 chars ✓
 
 **Add-label flow:**
+
 1. User clicks `add-label:<channelId>` button → bot replies with ephemeral `add-label-type:` select menu
 2. User selects a type:
    - `rassegnazione` → `deferUpdate` → added directly (no modal)

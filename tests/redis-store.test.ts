@@ -184,8 +184,12 @@ describe('RedisPericoloStore — sessions', () => {
   });
 
   it('start/stop are no-ops (do not throw)', () => {
-    expect(() => { store.start(); }).not.toThrow();
-    expect(() => { store.stop(); }).not.toThrow();
+    expect(() => {
+      store.start();
+    }).not.toThrow();
+    expect(() => {
+      store.stop();
+    }).not.toThrow();
   });
 });
 

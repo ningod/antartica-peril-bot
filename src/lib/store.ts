@@ -6,7 +6,12 @@
  * Threat pools and Explorer profiles never expire.
  */
 
-import type { IPericoloStore, PericoloSession, ThreatPool, ExplorerProfile } from './store-interface.js';
+import type {
+  IPericoloStore,
+  PericoloSession,
+  ThreatPool,
+  ExplorerProfile,
+} from './store-interface.js';
 import type { Lang } from './i18n/index.js';
 import { DEFAULT_LANG } from './i18n/index.js';
 

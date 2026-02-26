@@ -243,7 +243,10 @@ describe('MemoryPericoloStore — explorer profiles', () => {
   it('overwrites existing profile on set', async () => {
     const profile = makeExplorerProfile();
     await store.setExplorerProfile(profile);
-    const updated = { ...profile, tags: [{ id: 'tag-3', type: 'risorsa' as const, text: 'Torcia' }] };
+    const updated = {
+      ...profile,
+      tags: [{ id: 'tag-3', type: 'risorsa' as const, text: 'Torcia' }],
+    };
     await store.setExplorerProfile(updated);
     const retrieved = await store.getExplorerProfile('user-1', 'channel-1');
     expect(retrieved?.tags).toHaveLength(1);

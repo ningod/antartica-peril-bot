@@ -7,7 +7,12 @@
  */
 
 import { EmbedBuilder, Colors } from 'discord.js';
-import type { DrawnLabel, PericoloSession, ThreatPool, ExplorerProfile } from './store-interface.js';
+import type {
+  DrawnLabel,
+  PericoloSession,
+  ThreatPool,
+  ExplorerProfile,
+} from './store-interface.js';
 import {
   LABEL_TYPE_DISPLAY,
   summarizeDraws,

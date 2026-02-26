@@ -193,10 +193,7 @@ export function startGateway(store: IPericoloStore, limiter: RateLimiter): Clien
               await interaction.deferUpdate();
             } else {
               // Check whether the user has Explorer tags for this type
-              const profile = await store.getExplorerProfile(
-                interaction.user.id,
-                channelId
-              );
+              const profile = await store.getExplorerProfile(interaction.user.id, channelId);
               const matchingTags = profile
                 ? profile.tags.filter((tag) => tag.type === selectedType && tag.text)
                 : [];
@@ -227,10 +224,7 @@ export function startGateway(store: IPericoloStore, limiter: RateLimiter): Clien
               // Tratto-segnato needs both sides — show pre-populated modal
               const lang = await store.getChannelLang(channelId);
               const t = tr(lang);
-              const profile = await store.getExplorerProfile(
-                interaction.user.id,
-                channelId
-              );
+              const profile = await store.getExplorerProfile(interaction.user.id, channelId);
               const explorerTag = profile?.tags.find((et) => et.id === selectedValue);
               await interaction.showModal(
                 buildAddLabelModal(
@@ -336,10 +330,7 @@ export function startGateway(store: IPericoloStore, limiter: RateLimiter): Clien
             }
           } else if (customId.startsWith('add-label-suggest:')) {
             // Only dispatch direct-add cases (__custom__ and tratto-segnato use modal)
-            if (
-              selectedType !== SUGGEST_CUSTOM_VALUE &&
-              !customId.endsWith(':tratto-segnato')
-            ) {
+            if (selectedType !== SUGGEST_CUSTOM_VALUE && !customId.endsWith(':tratto-segnato')) {
               await handleExplorerSuggestSelect(interaction, store, limiter);
             }
           }

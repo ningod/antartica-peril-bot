@@ -43,18 +43,18 @@
 
 ### Type Choices for `/peril add`
 
-| Value              | Display          | Polarity      | Triggers Severe            |
-| ------------------ | ---------------- | ------------- | -------------------------- |
-| `tratto`           | Tratto           | **Positive**  | No                         |
-| `tratto-nome`      | Nome      | **Positive**  | No (subtype of tratto)     |
-| `tratto-archetipo` | Archetipo | **Positive**  | No (subtype of tratto)     |
-| `risorsa`          | Risorsa          | **Positive**  | No                         |
-| `tratto-segnato`   | Tratto-Segnato   | **Uncertain** | No                         |
-| `condizione`       | Condizione       | **Negative**  | No                         |
-| `terrore`          | Terrore          | **Negative**  | No (subtype of condizione) |
-| `rassegnazione`    | Rassegnazione    | **Negative**  | No                         |
-| `minaccia`         | Minaccia         | **Negative**  | **Yes** (Push only)        |
-| `visione`          | Visione          | **Negative**  | **Yes** (Push only)        |
+| Value              | Display        | Polarity      | Triggers Severe            |
+| ------------------ | -------------- | ------------- | -------------------------- |
+| `tratto`           | Tratto         | **Positive**  | No                         |
+| `tratto-nome`      | Nome           | **Positive**  | No (subtype of tratto)     |
+| `tratto-archetipo` | Archetipo      | **Positive**  | No (subtype of tratto)     |
+| `risorsa`          | Risorsa        | **Positive**  | No                         |
+| `tratto-segnato`   | Tratto-Segnato | **Uncertain** | No                         |
+| `condizione`       | Condizione     | **Negative**  | No                         |
+| `terrore`          | Terrore        | **Negative**  | No (subtype of condizione) |
+| `rassegnazione`    | Rassegnazione  | **Negative**  | No                         |
+| `minaccia`         | Minaccia       | **Negative**  | **Yes** (Push only)        |
+| `visione`          | Visione        | **Negative**  | **Yes** (Push only)        |
 
 ### Tratto-Segnato Flip Logic
 
@@ -239,14 +239,14 @@ All ≤ 100 chars. Example: `push:2:1234567890123456789` = 26 chars ✓
 
 ## 8. Security / Input Constraints
 
-| Input                | Limit                   | Enforced in                             |
-| -------------------- | ----------------------- | --------------------------------------- |
+| Input                | Limit                   | Enforced in                            |
+| -------------------- | ----------------------- | -------------------------------------- |
 | Label text           | Max 200 chars           | `/peril add` option + `sanitizeText()` |
 | Objective/notes      | Max 500 chars           | `/peril start` option                  |
-| @mention suppression | All user text           | `sanitizeText()` in `domain.ts`         |
-| Rate limit           | 5 actions / 10 s / user | `RateLimiter` in lib                    |
-| Push count           | 1–2                     | Button IDs + validation in handler      |
-| Threat pool size     | 1–3 labels              | `/threats set` validation               |
+| @mention suppression | All user text           | `sanitizeText()` in `domain.ts`        |
+| Rate limit           | 5 actions / 10 s / user | `RateLimiter` in lib                   |
+| Push count           | 1–2                     | Button IDs + validation in handler     |
+| Threat pool size     | 1–3 labels              | `/threats set` validation              |
 
 ---
 

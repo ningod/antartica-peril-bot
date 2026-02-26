@@ -42,7 +42,8 @@ export function createStore(): IPericoloStore {
       logger.info('storage-backend', { backend: 'memory', sessionTtlMs });
       return new MemoryPericoloStore(sessionTtlMs);
     }
-    const keyPrefix = (process.env.UPSTASH_REDIS_KEY_PREFIX ?? DEFAULT_KEY_PREFIX).trim() || DEFAULT_KEY_PREFIX;
+    const keyPrefix =
+      (process.env.UPSTASH_REDIS_KEY_PREFIX ?? DEFAULT_KEY_PREFIX).trim() || DEFAULT_KEY_PREFIX;
     const redis = createRedisClient(url, token);
     logger.info('storage-backend', { backend: 'redis', sessionTtlMs, keyPrefix });
     return new RedisPericoloStore(redis, sessionTtlMs, keyPrefix);

@@ -67,8 +67,8 @@ npm run dev                    # start in gateway mode
 
 #### `/peril` — Brave the Peril Session
 
-| Command                                                  | Description                                    |
-| -------------------------------------------------------- | ---------------------------------------------- |
+| Command                                                 | Description                                    |
+| ------------------------------------------------------- | ---------------------------------------------- |
 | `/peril start <objective> [lead] [notes]`               | Start a new session                            |
 | `/peril add <type> [subtype] [text] [owner] [neg_side]` | Add a tag to the Pouch                         |
 | `/peril add-threats`                                    | Copy threat pool into Pouch                    |
@@ -81,18 +81,18 @@ npm run dev                    # start in gateway mode
 
 **Tag types for `/peril add`:**
 
-| Type               | Polarity     | Notes                                                                  |
-| ------------------ | ------------ | ---------------------------------------------------------------------- |
-| `Trait`            | ✨ Positive  |                                                                        |
-| `Name`             | ✨ Positive  | Subtype of Trait                                                       |
-| `Archetype`        | ✨ Positive  | Subtype of Trait                                                       |
-| `Supply`           | ✨ Positive  |                                                                        |
-| `Marked Trait`     | ❓ Uncertain | Resolved at session end. Use `neg_side` + `type=trait` to auto-create  |
-| `Condition`        | 💀 Negative  |                                                                        |
-| `Dread`            | 💀 Negative  | Subtype of Condition                                                   |
-| `Resignation`      | 💀 Negative  |                                                                        |
-| `Threat`           | 💀 Negative  | ⚠️ Dire Consequences if drawn during Push                              |
-| `Vision`           | 💀 Negative  | ⚠️ Dire Consequences if drawn during Push                              |
+| Type           | Polarity     | Notes                                                                 |
+| -------------- | ------------ | --------------------------------------------------------------------- |
+| `Trait`        | ✨ Positive  |                                                                       |
+| `Name`         | ✨ Positive  | Subtype of Trait                                                      |
+| `Archetype`    | ✨ Positive  | Subtype of Trait                                                      |
+| `Supply`       | ✨ Positive  |                                                                       |
+| `Marked Trait` | ❓ Uncertain | Resolved at session end. Use `neg_side` + `type=trait` to auto-create |
+| `Condition`    | 💀 Negative  |                                                                       |
+| `Dread`        | 💀 Negative  | Subtype of Condition                                                  |
+| `Resignation`  | 💀 Negative  |                                                                       |
+| `Threat`       | 💀 Negative  | ⚠️ Dire Consequences if drawn during Push                             |
+| `Vision`       | 💀 Negative  | ⚠️ Dire Consequences if drawn during Push                             |
 
 ### Session Lifecycle
 
@@ -204,8 +204,8 @@ npm run dev                    # avvia in modalità gateway
 
 #### `/peril` — Sessione Pericolo
 
-| Comando                                                  | Descrizione                                        |
-| -------------------------------------------------------- | -------------------------------------------------- |
+| Comando                                                 | Descrizione                                        |
+| ------------------------------------------------------- | -------------------------------------------------- |
 | `/peril start <objective> [lead] [notes]`               | Avvia una nuova sessione                           |
 | `/peril add <type> [subtype] [text] [owner] [neg_side]` | Aggiunge un'etichetta al sacchetto                 |
 | `/peril add-threats`                                    | Copia il Pool Minacce nel sacchetto                |
@@ -218,18 +218,18 @@ npm run dev                    # avvia in modalità gateway
 
 **Tipi di etichetta per `/peril add`:**
 
-| Tipo               | Polarità    | Note                                                                    |
-| ------------------ | ----------- | ----------------------------------------------------------------------- |
-| `Tratto`           | ✨ Positivo |                                                                         |
-| `Nome`             | ✨ Positivo | Sottotipo di Tratto                                                     |
-| `Archetipo`        | ✨ Positivo | Sottotipo di Tratto                                                     |
-| `Risorsa`          | ✨ Positivo |                                                                         |
-| `Tratto Segnato`   | ❓ Incerto  | Risolto a fine sessione. Usa `neg_side` + `type=tratto` per auto-creare |
-| `Condizione`       | 💀 Negativo |                                                                         |
-| `Terrore`          | 💀 Negativo | Sottotipo di Condizione                                                 |
-| `Rassegnazione`    | 💀 Negativo |                                                                         |
-| `Minaccia`         | 💀 Negativo | ⚠️ Conseguenze Nefaste se estratta durante Superarsi                    |
-| `Visione`          | 💀 Negativo | ⚠️ Conseguenze Nefaste se estratta durante Superarsi                    |
+| Tipo             | Polarità    | Note                                                                    |
+| ---------------- | ----------- | ----------------------------------------------------------------------- |
+| `Tratto`         | ✨ Positivo |                                                                         |
+| `Nome`           | ✨ Positivo | Sottotipo di Tratto                                                     |
+| `Archetipo`      | ✨ Positivo | Sottotipo di Tratto                                                     |
+| `Risorsa`        | ✨ Positivo |                                                                         |
+| `Tratto Segnato` | ❓ Incerto  | Risolto a fine sessione. Usa `neg_side` + `type=tratto` per auto-creare |
+| `Condizione`     | 💀 Negativo |                                                                         |
+| `Terrore`        | 💀 Negativo | Sottotipo di Condizione                                                 |
+| `Rassegnazione`  | 💀 Negativo |                                                                         |
+| `Minaccia`       | 💀 Negativo | ⚠️ Conseguenze Nefaste se estratta durante Superarsi                    |
+| `Visione`        | 💀 Negativo | ⚠️ Conseguenze Nefaste se estratta durante Superarsi                    |
 
 ### Ciclo di Vita della Sessione
 

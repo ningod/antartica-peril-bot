@@ -15,7 +15,11 @@
  * Authorization: only the Guide of the active session can activate these buttons.
  */
 
-import type { ButtonInteraction, ModalSubmitInteraction, StringSelectMenuInteraction } from 'discord.js';
+import type {
+  ButtonInteraction,
+  ModalSubmitInteraction,
+  StringSelectMenuInteraction,
+} from 'discord.js';
 import { MessageFlags } from 'discord.js';
 import type { IPericoloStore } from '../lib/store-interface.js';
 import type { RateLimiter } from '../lib/ratelimit.js';
@@ -649,9 +653,7 @@ async function handleAddLabelModal(
   // Parse modal fields
   const rawText = interaction.fields.getTextInputValue('text').trim();
   const rawNegSide =
-    labelType === 'tratto-segnato'
-      ? interaction.fields.getTextInputValue('neg_side').trim()
-      : '';
+    labelType === 'tratto-segnato' ? interaction.fields.getTextInputValue('neg_side').trim() : '';
 
   // Guard text length (modal max_length enforces it, but validate defensively)
   if (rawText.length > MAX_LABEL_TEXT_LENGTH || rawNegSide.length > MAX_LABEL_TEXT_LENGTH) {

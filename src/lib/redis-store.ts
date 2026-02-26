@@ -17,7 +17,12 @@
  */
 
 import { Redis } from '@upstash/redis';
-import type { IPericoloStore, PericoloSession, ThreatPool, ExplorerProfile } from './store-interface.js';
+import type {
+  IPericoloStore,
+  PericoloSession,
+  ThreatPool,
+  ExplorerProfile,
+} from './store-interface.js';
 import type { Lang } from './i18n/index.js';
 import { DEFAULT_LANG, SUPPORTED_LANGS } from './i18n/index.js';
 
@@ -64,7 +69,9 @@ function makeKeys(prefix: string): {
 // Upstash auto-deserialises JSON, but Date fields come back as ISO strings.
 // ---------------------------------------------------------------------------
 
-function reviveSession(raw: PericoloSession & { createdAt: string | Date; updatedAt: string | Date }): PericoloSession {
+function reviveSession(
+  raw: PericoloSession & { createdAt: string | Date; updatedAt: string | Date }
+): PericoloSession {
   return {
     ...raw,
     createdAt: raw.createdAt instanceof Date ? raw.createdAt : new Date(raw.createdAt),
@@ -126,7 +133,7 @@ export class RedisPericoloStore implements IPericoloStore {
 
   async getSession(channelId: string): Promise<PericoloSession | null> {
     const raw = await this.redis.get<PericoloSession & { createdAt: string; updatedAt: string }>(
-      this.K.session(channelId),
+      this.K.session(channelId)
     );
     return raw ? reviveSession(raw) : null;
   }
@@ -163,7 +170,7 @@ export class RedisPericoloStore implements IPericoloStore {
 
   async getExplorerProfile(userId: string, channelId: string): Promise<ExplorerProfile | null> {
     const raw = await this.redis.get<ExplorerProfile & { updatedAt: string }>(
-      this.K.explorer(userId, channelId),
+      this.K.explorer(userId, channelId)
     );
     return raw ? reviveProfile(raw) : null;
   }
@@ -182,7 +189,7 @@ export class RedisPericoloStore implements IPericoloStore {
     const userIds = await this.redis.smembers(this.K.explorersCh(channelId));
     if (userIds.length === 0) return [];
     const profiles = await Promise.all(
-      userIds.map((userId) => this.getExplorerProfile(userId, channelId)),
+      userIds.map((userId) => this.getExplorerProfile(userId, channelId))
     );
     return profiles.filter((p): p is ExplorerProfile => p !== null);
   }

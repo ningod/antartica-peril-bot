@@ -15,11 +15,7 @@ import { SlashCommandBuilder } from 'discord.js';
 import { randomUUID } from 'node:crypto';
 import type { IPericoloStore } from '../lib/store-interface.js';
 import type { ExplorerProfile, ExplorerTag } from '../lib/store-interface.js';
-import {
-  sanitizeText,
-  LABEL_TYPE_DISPLAY,
-  MAX_LABEL_TEXT_LENGTH,
-} from '../lib/domain.js';
+import { sanitizeText, LABEL_TYPE_DISPLAY, MAX_LABEL_TEXT_LENGTH } from '../lib/domain.js';
 import type { LabelType } from '../lib/domain.js';
 import {
   buildExplorerProfileEmbed,
@@ -44,7 +40,7 @@ export const explorerCommandData = new SlashCommandBuilder()
       .addStringOption((opt) =>
         opt
           .setName('name')
-          .setDescription('Name Trait (tratto-nome) — your Explorer\'s name')
+          .setDescription("Name Trait (tratto-nome) — your Explorer's name")
           .setRequired(true)
           .setMaxLength(MAX_LABEL_TEXT_LENGTH)
       )
@@ -158,10 +154,7 @@ export async function handleExplorerAutocomplete(
   interaction: AutocompleteInteraction,
   store: IPericoloStore
 ): Promise<void> {
-  const profile = await store.getExplorerProfile(
-    interaction.user.id,
-    interaction.channelId
-  );
+  const profile = await store.getExplorerProfile(interaction.user.id, interaction.channelId);
 
   if (!profile || profile.tags.length === 0) {
     await interaction.respond([]);

@@ -143,8 +143,7 @@ export const itTranslations: Tr = {
   titleExplorer: 'Esploratore',
   fieldExplorerTags: (n) => `Etichette (${n})`,
   explorerCleared: 'Profilo esploratore cancellato.',
-  explorerNoProfile:
-    'Nessun profilo esploratore impostato. Usa `/explorer set` per crearne uno.',
+  explorerNoProfile: 'Nessun profilo esploratore impostato. Usa `/explorer set` per crearne uno.',
   explorerNoTags: '*Nessuna etichetta nel profilo.*',
   explorerNoConditions:
     'Nessuna Condizione trovata nei profili degli Esploratori di questo canale.',
