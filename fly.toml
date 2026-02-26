@@ -24,7 +24,7 @@ primary_region = "ams"
 
 [env]
   INTERACTIONS_MODE = "http"
-  STORAGE_BACKEND = "memory"
+  STORAGE_BACKEND = "redis"
 
 [[vm]]
   memory = "256mb"
