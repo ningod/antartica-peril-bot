@@ -2,6 +2,15 @@
 
 These rules are automatically loaded at every session start.
 
+## Language Policy
+
+- **Source code and comments**: always in English, regardless of the language used in the prompt or
+  conversation. This applies to: identifiers, inline comments, JSDoc, commit messages, and any text
+  that lives inside `.ts` / `.js` / `.json` / config files.
+- **User-facing strings**: always kept multilingual via the `src/lib/i18n/` translation bundles.
+  Every new user-facing string MUST be added to `Tr` in `types.ts` and implemented in both `it.ts`
+  and `en.ts`. Hard-coding a user-facing string directly in source code is not allowed.
+
 ## TypeScript
 
 - Strict mode always on — no `@ts-ignore` without explicit justification in a comment
@@ -40,3 +49,18 @@ These rules are automatically loaded at every session start.
 - Test each public function independently
 - Mock `crypto.randomInt` for tratto-segnato flip tests
 - Always test edge cases: empty bag, count > bag size, expired sessions
+
+## Verification After Every Change
+
+After completing any code modification, always run the full suite in this exact order:
+
+```
+npm test           # Vitest — all tests must pass
+npm run lint       # ESLint — zero errors, zero warnings
+npm run typecheck  # tsc --noEmit — zero type errors
+npm run build      # tsc — must compile cleanly
+```
+
+All four commands must exit with code 0 before the work is considered done.
+Never skip or reorder them; lint catches style issues that typecheck does not, and
+typecheck catches type errors that lint does not.
