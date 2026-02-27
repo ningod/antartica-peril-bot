@@ -169,6 +169,12 @@ export function startGateway(store: IPericoloStore, limiter: RateLimiter): Clien
           } else if (customId.startsWith('proceed-draw:')) {
             // New public message (not an edit of the original message)
             await interaction.deferReply();
+          } else if (
+            customId.startsWith('confirm-add-label:') ||
+            customId.startsWith('cancel-add-label:')
+          ) {
+            // Edit the ephemeral warning message in-place
+            await interaction.deferUpdate();
           } else if (customId.startsWith('add-label:')) {
             const channelId = customId.slice('add-label:'.length);
             const lang = await store.getChannelLang(channelId);
@@ -301,7 +307,9 @@ export function startGateway(store: IPericoloStore, limiter: RateLimiter): Clien
           if (
             interaction.customId.startsWith('push:') ||
             interaction.customId.startsWith('end-peril:') ||
-            interaction.customId.startsWith('proceed-draw:')
+            interaction.customId.startsWith('proceed-draw:') ||
+            interaction.customId.startsWith('confirm-add-label:') ||
+            interaction.customId.startsWith('cancel-add-label:')
           ) {
             await handleButton(interaction, store, limiter);
           }

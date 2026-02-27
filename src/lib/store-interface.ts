@@ -39,6 +39,17 @@ export interface PericoloSession {
   pushDraws: DrawnLabel[];
   /** Prevents the threat pool from being added twice. */
   threatPoolAdded: boolean;
+  /** Prevents Explorer conditions from being added more than once. */
+  conditionsAdded: boolean;
+  /** Prevents Explorer resignations from being added more than once. */
+  resignationsAdded: boolean;
+  /**
+   * Label waiting for the user's duplicate-warning confirmation.
+   * Set by /peril add when a similar label is found; cleared on confirm or cancel.
+   */
+  pendingLabel?: Label;
+  /** User ID who triggered the pending label confirmation. */
+  pendingAddUserId?: string;
   createdAt: Date;
   updatedAt: Date;
 }

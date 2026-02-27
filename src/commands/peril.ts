@@ -22,6 +22,7 @@ import {
   sanitizeText,
   drawFromBag,
   resolveUncertainDraws,
+  findSimilarInBag,
   LABEL_TYPE_DISPLAY,
   MAX_LABEL_TEXT_LENGTH,
   MAX_NARRATIVE_TEXT_LENGTH,
@@ -37,6 +38,8 @@ import {
   buildSessionResetEmbed,
   buildExplorerConditionsAddedEmbed,
   buildExplorerResignationsAddedEmbed,
+  buildNegativeTagsAddedEmbed,
+  buildDuplicateWarningEmbed,
   buildErrorEmbed,
 } from '../lib/embeds.js';
 import { tr } from '../lib/i18n/index.js';
@@ -134,6 +137,13 @@ export const perilCommandData = new SlashCommandBuilder()
       .setName('add-resignations')
       .setDescription('Add all Explorer Resignations from this channel to the Pouch (Lead only)')
   )
+  .addSubcommand((sub) =>
+    sub
+      .setName('add-negative-tags')
+      .setDescription(
+        'Add Threat Pool + all Explorer Conditions and Resignations to the Pouch (Lead only)'
+      )
+  )
   .addSubcommand((sub) => sub.setName('bag').setDescription('Show Pouch contents (private)'))
   .addSubcommand((sub) => sub.setName('draw').setDescription('Draw 3 tags from the Pouch'))
   .addSubcommand((sub) => sub.setName('end').setDescription('End the session and show the summary'))
@@ -150,6 +160,7 @@ const GUIDE_ONLY_SUBS = new Set([
   'add-threats',
   'add-conditions',
   'add-resignations',
+  'add-negative-tags',
   'end',
   'reset',
 ]);
@@ -257,6 +268,8 @@ export async function handlePerilCommand(
     await handleAddConditions(interaction, store, t);
   } else if (sub === 'add-resignations') {
     await handleAddResignations(interaction, store, t);
+  } else if (sub === 'add-negative-tags') {
+    await handleAddNegativeTags(interaction, store, t);
   } else if (sub === 'bag') {
     await handleBag(interaction, store, t);
   } else if (sub === 'draw') {
@@ -357,6 +370,23 @@ export function buildAddLabelButtons(
     );
   }
   return row;
+}
+
+/** Build the Confirm / Cancel action row for the duplicate-warning dialog. */
+export function buildConfirmCancelButtons(
+  channelId: string,
+  t: Tr
+): ActionRowBuilder<ButtonBuilder> {
+  return new ActionRowBuilder<ButtonBuilder>().addComponents(
+    new ButtonBuilder()
+      .setCustomId(`confirm-add-label:${channelId}`)
+      .setLabel(t.btnConfirmAdd)
+      .setStyle(ButtonStyle.Success),
+    new ButtonBuilder()
+      .setCustomId(`cancel-add-label:${channelId}`)
+      .setLabel(t.btnCancelAdd)
+      .setStyle(ButtonStyle.Danger)
+  );
 }
 
 /**
@@ -471,6 +501,8 @@ async function handleStart(
     baseDraws: [],
     pushDraws: [],
     threatPoolAdded: false,
+    conditionsAdded: false,
+    resignationsAdded: false,
     createdAt: new Date(),
     updatedAt: new Date(),
   };
@@ -592,6 +624,34 @@ async function handleAdd(
 
   const label = createLabel(labelType, text, ownerId, posSide, negSide);
 
+  // Duplicate-warning check: if a similar label is already in the bag, ask for confirmation.
+  const similar = findSimilarInBag(session.bag, labelType, text);
+  if (similar) {
+    const warningMsg =
+      labelType === 'rassegnazione'
+        ? t.warnDuplicateRassegnazione
+        : t.warnSimilarLabel(similar.text ?? LABEL_TYPE_DISPLAY[similar.type]);
+
+    session.pendingLabel = label;
+    session.pendingAddUserId = interaction.user.id;
+    session.updatedAt = new Date();
+    await store.setSession(session);
+
+    logger.info('label-add-duplicate-warning', {
+      sessionId: session.sessionId,
+      channelId: session.channelId,
+      labelType,
+      userId: interaction.user.id,
+    });
+
+    await interaction.editReply({
+      embeds: [buildDuplicateWarningEmbed(warningMsg, t)],
+      components: [buildConfirmCancelButtons(interaction.channelId, t)],
+      allowedMentions: { parse: [] },
+    });
+    return;
+  }
+
   session.bag.push(label);
   session.allLabels.push(label);
   session.updatedAt = new Date();
@@ -674,6 +734,14 @@ async function handleAddConditions(
   if (!session) return;
   if (!(await requireGuide(interaction, session, t))) return;
 
+  if (session.conditionsAdded) {
+    await interaction.editReply({
+      embeds: [buildErrorEmbed(t.errConditionsAlreadyAdded, t)],
+      allowedMentions: { parse: [] },
+    });
+    return;
+  }
+
   const profiles = await store.getExplorerProfilesForChannel(interaction.channelId);
   const conditionLabels = profiles.flatMap((p) =>
     p.tags.filter((tag) => tag.type === 'condizione')
@@ -692,6 +760,7 @@ async function handleAddConditions(
     session.bag.push(label);
     session.allLabels.push(label);
   }
+  session.conditionsAdded = true;
   session.updatedAt = new Date();
 
   await store.setSession(session);
@@ -726,6 +795,14 @@ async function handleAddResignations(
   if (!session) return;
   if (!(await requireGuide(interaction, session, t))) return;
 
+  if (session.resignationsAdded) {
+    await interaction.editReply({
+      embeds: [buildErrorEmbed(t.errResignationsAlreadyAdded, t)],
+      allowedMentions: { parse: [] },
+    });
+    return;
+  }
+
   const profiles = await store.getExplorerProfilesForChannel(interaction.channelId);
   const resignationTags = collectResignationTags(profiles);
 
@@ -742,6 +819,7 @@ async function handleAddResignations(
     session.bag.push(label);
     session.allLabels.push(label);
   }
+  session.resignationsAdded = true;
   session.updatedAt = new Date();
 
   await store.setSession(session);
@@ -755,6 +833,93 @@ async function handleAddResignations(
 
   await interaction.editReply({
     embeds: [buildExplorerResignationsAddedEmbed(resignationTags.length, session, t)],
+    allowedMentions: { parse: [] },
+  });
+}
+
+/**
+ * /peril add-negative-tags — Lead-only.
+ * Combines the effects of add-threats + add-conditions + add-resignations in a
+ * single command. Threats are mandatory (same guards as add-threats). Conditions
+ * and resignations are optional: they are silently skipped when none are found.
+ */
+async function handleAddNegativeTags(
+  interaction: ChatInputCommandInteraction,
+  store: IPericoloStore,
+  t: Tr
+): Promise<void> {
+  const session = await requireSession(interaction, store, t);
+  if (!session) return;
+  if (!(await requireGuide(interaction, session, t))) return;
+
+  // --- Threat pool (required) ---
+  if (session.threatPoolAdded) {
+    await interaction.editReply({
+      embeds: [buildErrorEmbed(t.errThreatPoolAlreadyAdded, t)],
+      allowedMentions: { parse: [] },
+    });
+    return;
+  }
+
+  const pool = await store.getThreatPool(interaction.channelId);
+  if (!pool || pool.labels.length === 0) {
+    await interaction.editReply({
+      embeds: [buildErrorEmbed(t.errNoThreatPool, t)],
+      allowedMentions: { parse: [] },
+    });
+    return;
+  }
+
+  for (const poolLabel of pool.labels) {
+    const copy = createLabel(poolLabel.type, poolLabel.text, poolLabel.ownerId);
+    session.bag.push(copy);
+    session.allLabels.push(copy);
+  }
+  session.threatPoolAdded = true;
+
+  // --- Explorer conditions and resignations (optional, idempotency-guarded) ---
+  const profiles = await store.getExplorerProfilesForChannel(interaction.channelId);
+
+  let conditionCount = 0;
+  if (!session.conditionsAdded) {
+    const conditionTags = profiles.flatMap((p) => p.tags.filter((tag) => tag.type === 'condizione'));
+    for (const tag of conditionTags) {
+      const label = createLabel('condizione', tag.text);
+      session.bag.push(label);
+      session.allLabels.push(label);
+    }
+    conditionCount = conditionTags.length;
+    session.conditionsAdded = true;
+  }
+
+  let resignationCount = 0;
+  if (!session.resignationsAdded) {
+    const resignationTags = collectResignationTags(profiles);
+    for (const tag of resignationTags) {
+      const label = createLabel('rassegnazione', tag.text);
+      session.bag.push(label);
+      session.allLabels.push(label);
+    }
+    resignationCount = resignationTags.length;
+    session.resignationsAdded = true;
+  }
+
+  session.updatedAt = new Date();
+  await store.setSession(session);
+
+  logger.info('negative-tags-added-to-bag', {
+    sessionId: session.sessionId,
+    channelId: session.channelId,
+    threatCount: pool.labels.length,
+    conditionCount,
+    resignationCount,
+    userId: interaction.user.id,
+  });
+
+  await interaction.editReply({
+    embeds: [
+      buildNegativeTagsAddedEmbed(pool.labels.length, conditionCount, resignationCount, session, t),
+    ],
     allowedMentions: { parse: [] },
   });
 }
@@ -891,12 +1056,16 @@ async function handleReset(
   if (!session) return;
   if (!(await requireGuide(interaction, session, t))) return;
 
-  // Clear bag, draws, and threat-pool flag; keep objective and guide
+  // Clear bag, draws, idempotency flags, and any pending label; keep objective and guide
   session.bag = [];
   session.allLabels = [];
   session.baseDraws = [];
   session.pushDraws = [];
   session.threatPoolAdded = false;
+  session.conditionsAdded = false;
+  session.resignationsAdded = false;
+  session.pendingLabel = undefined;
+  session.pendingAddUserId = undefined;
   session.updatedAt = new Date();
 
   await store.setSession(session);

@@ -11,6 +11,8 @@ export const itTranslations: Tr = {
   titleBag: 'Sacchetto',
   titleLabelAdded: 'Etichetta Aggiunta',
   titleThreatPoolAdded: 'Pool Minacce Aggiunto',
+  titleNegativeTagsAdded: 'Etichette Negative Aggiunte',
+  titleDuplicateWarning: 'Avviso Duplicato',
   titleDraw: 'Estrazione',
   titleSessionEnd: 'Fine Sessione',
   titleSessionReset: 'Sessione Azzerata',
@@ -119,6 +121,8 @@ export const itTranslations: Tr = {
     'Il sacchetto non contiene Minacce o Visioni. Usa `/peril add-threats` per aggiungerle prima di estrarre.',
   errBagEmptyPush: 'Il sacchetto è vuoto — nessuna etichetta da estrarre.',
   errThreatPoolAlreadyAdded: 'Il Pool Minacce è già stato aggiunto a questa sessione.',
+  errConditionsAlreadyAdded: 'Le Condizioni degli Esploratori sono già state aggiunte a questa sessione.',
+  errResignationsAlreadyAdded: 'Le Rassegnazioni degli Esploratori sono già state aggiunte a questa sessione.',
   errNoThreatPool: 'Nessun Pool Minacce disponibile. Usa `/threats set` per impostarlo prima.',
   errNoThreatPoolList:
     'Nessun Pool Minacce impostato in questo canale. Usa `/threats set` per crearne uno.',
@@ -135,6 +139,17 @@ export const itTranslations: Tr = {
   errNoSessionChannel: 'Nessuna sessione attiva in questo canale.',
   errTextTooLong: 'Testo troppo lungo (massimo 200 caratteri per campo).',
   errUnexpected: 'Si è verificato un errore imprevisto. Riprova.',
+  errConfirmationExpired:
+    'Conferma scaduta — un altro utente ha avviato un inserimento. Ripeti il comando `/peril add`.',
+
+  // ---- Duplicate-warning confirmation ----
+  warnSimilarLabel: (existingText) =>
+    `Il sacchetto contiene già un'etichetta simile: **${existingText}**. Vuoi aggiungerla comunque?`,
+  warnDuplicateRassegnazione:
+    'È già presente una Rassegnazione nel sacchetto. Vuoi aggiungerne un\'altra?',
+  btnConfirmAdd: 'Conferma',
+  btnCancelAdd: 'Annulla',
+  addLabelCancelled: 'Etichetta non aggiunta.',
 
   // ---- Suggestions ----
   suggestionAtLeast2:
@@ -154,6 +169,9 @@ export const itTranslations: Tr = {
     'Nessuna Rassegnazione trovata nei profili degli Esploratori di questo canale.',
   explorerResignationsAdded: (count) =>
     `${count} Rassegnazion${count === 1 ? 'e aggiunta' : 'i aggiunte'} al sacchetto dagli Esploratori.`,
+  negativeTagsAdded: (threats, conditions, resignations) =>
+    `${threats} Minacce/Visioni, ${conditions} Condizion${conditions === 1 ? 'e' : 'i'}, ` +
+    `${resignations} Rassegnazion${resignations === 1 ? 'e' : 'i'} aggiunte al sacchetto.`,
 
   // ---- Lang command ----
   langChanged: 'Lingua del bot impostata su **Italiano** per questo canale.',
@@ -194,6 +212,11 @@ export const itTranslations: Tr = {
       name: '/peril add-resignations',
       value:
         'Aggiungi tutte le Rassegnazioni dai profili Esploratore di questo canale al sacchetto (Guida).',
+    },
+    {
+      name: '/peril add-negative-tags',
+      value:
+        'Aggiunge in un solo comando il Pool Minacce, tutte le Condizioni e tutte le Rassegnazioni degli Esploratori al sacchetto (Guida). Equivale alla sequenza add-threats + add-conditions + add-resignations.',
     },
     {
       name: '/peril bag',

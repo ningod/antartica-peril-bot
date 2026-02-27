@@ -428,6 +428,12 @@ function createInteractionHandler(
       } else if (customId.startsWith('proceed-draw:')) {
         responseType = InteractionResponseType.DeferredChannelMessageWithSource;
         // public — no flags
+      } else if (
+        customId.startsWith('confirm-add-label:') ||
+        customId.startsWith('cancel-add-label:')
+      ) {
+        // Edit the ephemeral warning message in-place
+        responseType = InteractionResponseType.DeferredMessageUpdate;
       } else {
         responseType = InteractionResponseType.DeferredChannelMessageWithSource;
         deferFlags = MessageFlags.Ephemeral;
@@ -527,7 +533,9 @@ async function handleComponent(
     if (
       customId.startsWith('push:') ||
       customId.startsWith('end-peril:') ||
-      customId.startsWith('proceed-draw:')
+      customId.startsWith('proceed-draw:') ||
+      customId.startsWith('confirm-add-label:') ||
+      customId.startsWith('cancel-add-label:')
     ) {
       await handleButton(interaction, store, limiter);
     }

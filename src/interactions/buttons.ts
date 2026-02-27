@@ -38,6 +38,7 @@ import {
   buildSessionEndEmbed,
   buildErrorEmbed,
   buildLabelAddedEmbed,
+  buildAddLabelCancelledEmbed,
 } from '../lib/embeds.js';
 import {
   buildPerilButtons,
@@ -66,6 +67,10 @@ export async function handleButton(
     await handleEndPerilButton(interaction, store, limiter, customId);
   } else if (customId.startsWith('proceed-draw:')) {
     await handleProceedDrawButton(interaction, store, limiter, customId);
+  } else if (customId.startsWith('confirm-add-label:')) {
+    await handleConfirmAddLabel(interaction, store, customId);
+  } else if (customId.startsWith('cancel-add-label:')) {
+    await handleCancelAddLabel(interaction, store, customId);
   }
   // Unknown button type — ignore silently
 }
@@ -481,6 +486,145 @@ async function handleEndPerilButton(
     embeds: [
       buildSessionEndEmbed(session, resolvedBase, resolvedPush, [...baseFlips, ...pushFlips], t),
     ],
+    components: [],
+    allowedMentions: { parse: [] },
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Duplicate-warning Confirm / Cancel button handlers
+// ---------------------------------------------------------------------------
+
+/**
+ * User confirmed adding a label that triggered the duplicate warning.
+ * The pending label is moved from session.pendingLabel into the bag.
+ *
+ * Called after deferUpdate() has been sent.
+ */
+async function handleConfirmAddLabel(
+  interaction: ButtonInteraction,
+  store: IPericoloStore,
+  customId: string
+): Promise<void> {
+  const channelId = customId.slice('confirm-add-label:'.length);
+  const lang = await store.getChannelLang(channelId);
+  const t = tr(lang);
+  const userId = interaction.user.id;
+
+  const session = await store.getSession(channelId);
+  if (!session) {
+    await interaction.editReply({
+      embeds: [buildErrorEmbed(t.errNoSessionChannel, t)],
+      allowedMentions: { parse: [] },
+    });
+    return;
+  }
+
+  if (!session.pendingLabel || !session.pendingAddUserId) {
+    await interaction.editReply({
+      embeds: [buildErrorEmbed(t.errUnexpected, t)],
+      components: [],
+      allowedMentions: { parse: [] },
+    });
+    return;
+  }
+
+  // Only the user who triggered the warning (or the guide) may confirm.
+  if (userId !== session.pendingAddUserId && userId !== session.guideId) {
+    await interaction.editReply({
+      embeds: [buildErrorEmbed(t.errConfirmationExpired, t)],
+      components: [],
+      allowedMentions: { parse: [] },
+    });
+    return;
+  }
+
+  const label = session.pendingLabel;
+  session.bag.push(label);
+  session.allLabels.push(label);
+  session.pendingLabel = undefined;
+  session.pendingAddUserId = undefined;
+  session.updatedAt = new Date();
+
+  await store.setSession(session);
+
+  logger.info('label-confirmed-after-warning', {
+    sessionId: session.sessionId,
+    channelId,
+    labelType: label.type,
+    userId,
+  });
+
+  const displayName = LABEL_TYPE_DISPLAY[label.type];
+  const labelDesc = label.text ? `${displayName} — ${label.text}` : displayName;
+  const isGuide = session.guideId === userId;
+
+  await interaction.editReply({
+    embeds: [buildLabelAddedEmbed(session, labelDesc, t)],
+    components: [buildAddLabelButtons(channelId, isGuide, t)],
+    allowedMentions: { parse: [] },
+  });
+}
+
+/**
+ * User cancelled adding a label that triggered the duplicate warning.
+ * The pending label is discarded.
+ *
+ * Called after deferUpdate() has been sent.
+ */
+async function handleCancelAddLabel(
+  interaction: ButtonInteraction,
+  store: IPericoloStore,
+  customId: string
+): Promise<void> {
+  const channelId = customId.slice('cancel-add-label:'.length);
+  const lang = await store.getChannelLang(channelId);
+  const t = tr(lang);
+  const userId = interaction.user.id;
+
+  const session = await store.getSession(channelId);
+  if (!session) {
+    await interaction.editReply({
+      embeds: [buildErrorEmbed(t.errNoSessionChannel, t)],
+      components: [],
+      allowedMentions: { parse: [] },
+    });
+    return;
+  }
+
+  if (!session.pendingAddUserId) {
+    await interaction.editReply({
+      embeds: [buildErrorEmbed(t.errUnexpected, t)],
+      components: [],
+      allowedMentions: { parse: [] },
+    });
+    return;
+  }
+
+  // Only the user who triggered the warning (or the guide) may cancel.
+  if (userId !== session.pendingAddUserId && userId !== session.guideId) {
+    await interaction.editReply({
+      embeds: [buildErrorEmbed(t.errConfirmationExpired, t)],
+      components: [],
+      allowedMentions: { parse: [] },
+    });
+    return;
+  }
+
+  session.pendingLabel = undefined;
+  session.pendingAddUserId = undefined;
+  session.updatedAt = new Date();
+
+  await store.setSession(session);
+
+  logger.info('label-cancelled-after-warning', {
+    sessionId: session.sessionId,
+    channelId,
+    userId,
+  });
+
+  await interaction.editReply({
+    embeds: [buildAddLabelCancelledEmbed(t)],
     components: [],
     allowedMentions: { parse: [] },
   });

@@ -17,6 +17,8 @@ export interface Tr {
   titleBag: string;
   titleLabelAdded: string;
   titleThreatPoolAdded: string;
+  titleNegativeTagsAdded: string;
+  titleDuplicateWarning: string;
   titleDraw: string;
   titleSessionEnd: string;
   titleSessionReset: string;
@@ -129,6 +131,8 @@ export interface Tr {
   errBagNoBagThreats: string;
   errBagEmptyPush: string;
   errThreatPoolAlreadyAdded: string;
+  errConditionsAlreadyAdded: string;
+  errResignationsAlreadyAdded: string;
   errNoThreatPool: string;
   errNoThreatPoolList: string;
   errAtLeastOneLabel: string;
@@ -144,6 +148,20 @@ export interface Tr {
   errNoSessionChannel: string;
   errTextTooLong: string;
   errUnexpected: string;
+  /** Shown when the user's confirm/cancel has been superseded by another add. */
+  errConfirmationExpired: string;
+
+  // ---- Duplicate-warning confirmation ----
+  /** e.g. "The Pouch already contains a similar tag: **Ferito**. Proceed?" */
+  warnSimilarLabel: (existingText: string) => string;
+  /** Shown when a rassegnazione is already in the bag. */
+  warnDuplicateRassegnazione: string;
+  /** Button label for confirming the duplicate add. */
+  btnConfirmAdd: string;
+  /** Button label for cancelling the duplicate add. */
+  btnCancelAdd: string;
+  /** Shown after the user cancels the duplicate add. */
+  addLabelCancelled: string;
 
   // ---- Suggestions ----
   suggestionAtLeast2: string;
@@ -161,6 +179,11 @@ export interface Tr {
   errNoResignations: string;
   /** e.g. "3 Rassegnazioni aggiunte al sacchetto dagli Esploratori." */
   explorerResignationsAdded: (count: number) => string;
+  /**
+   * Summary line for /peril add-negative-tags.
+   * e.g. "2 Threats/Visions, 1 Condition, 0 Resignations added to the Pouch."
+   */
+  negativeTagsAdded: (threats: number, conditions: number, resignations: number) => string;
 
   // ---- Lang command ----
   langChanged: string;

@@ -14,6 +14,8 @@ export const enTranslations: Tr = {
   titleBag: 'Pouch',
   titleLabelAdded: 'Tag Added',
   titleThreatPoolAdded: 'Threat Pool Added',
+  titleNegativeTagsAdded: 'Negative Tags Added',
+  titleDuplicateWarning: 'Duplicate Warning',
   titleDraw: 'Draw',
   titleSessionEnd: 'Session End',
   titleSessionReset: 'Session Reset',
@@ -118,6 +120,8 @@ export const enTranslations: Tr = {
     'The Pouch has no Threats or Visions. Use `/peril add-threats` to add them before drawing.',
   errBagEmptyPush: 'The Pouch is empty — no tags to draw.',
   errThreatPoolAlreadyAdded: 'The Threat Pool has already been added to this session.',
+  errConditionsAlreadyAdded: 'Explorer Conditions have already been added to this session.',
+  errResignationsAlreadyAdded: 'Explorer Resignations have already been added to this session.',
   errNoThreatPool: 'No Threat Pool available. Use `/threats set` to set one first.',
   errNoThreatPoolList: 'No Threat Pool set for this channel. Use `/threats set` to create one.',
   errAtLeastOneLabel: 'At least one tag is required.',
@@ -133,6 +137,16 @@ export const enTranslations: Tr = {
   errNoSessionChannel: 'No active session in this channel.',
   errTextTooLong: 'Text too long (maximum 200 characters per field).',
   errUnexpected: 'An unexpected error occurred. Please try again.',
+  errConfirmationExpired:
+    'Confirmation expired — another user started a new add. Please repeat the `/peril add` command.',
+
+  // ---- Duplicate-warning confirmation ----
+  warnSimilarLabel: (existingText) =>
+    `The Pouch already contains a similar tag: **${existingText}**. Add it anyway?`,
+  warnDuplicateRassegnazione: 'A Resignation is already in the Pouch. Add another one?',
+  btnConfirmAdd: 'Confirm',
+  btnCancelAdd: 'Cancel',
+  addLabelCancelled: 'Tag not added.',
 
   // ---- Suggestions ----
   suggestionAtLeast2:
@@ -150,6 +164,10 @@ export const enTranslations: Tr = {
   errNoResignations: 'No Resignations found in Explorer profiles for this channel.',
   explorerResignationsAdded: (count) =>
     `${count} Resignation${count === 1 ? '' : 's'} added to the Pouch from Explorer profiles.`,
+  negativeTagsAdded: (threats, conditions, resignations) =>
+    `${threats} Threat${threats === 1 ? '' : 's'}/Vision${threats === 1 ? '' : 's'}, ` +
+    `${conditions} Condition${conditions === 1 ? '' : 's'}, ` +
+    `${resignations} Resignation${resignations === 1 ? '' : 's'} added to the Pouch.`,
 
   // ---- Lang command ----
   langChanged: 'Bot language set to **English** for this channel.',
@@ -183,6 +201,11 @@ export const enTranslations: Tr = {
     {
       name: '/peril add-threats',
       value: 'Add all Threat Pool tags to the Pouch (no partial selection).',
+    },
+    {
+      name: '/peril add-negative-tags',
+      value:
+        'Single command that adds the Threat Pool, all Explorer Conditions, and all Explorer Resignations to the Pouch (Lead only). Equivalent to running add-threats + add-conditions + add-resignations.',
     },
     {
       name: '/peril bag',

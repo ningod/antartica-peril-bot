@@ -41,6 +41,8 @@ function makeSession(overrides?: Partial<PericoloSession>): PericoloSession {
     baseDraws: [],
     pushDraws: [],
     threatPoolAdded: false,
+    conditionsAdded: false,
+    resignationsAdded: false,
     createdAt: new Date(),
     updatedAt: new Date(),
     ...overrides,

@@ -32,7 +32,7 @@ src/
     i18n/              Translation bundles (it, en) and Tr type
   commands/
     threats.ts         /threats set|list|clear
-    peril.ts           /peril start|add|add-threats|add-conditions|add-resignations|bag|draw|end|reset
+    peril.ts           /peril start|add|add-threats|add-conditions|add-resignations|add-negative-tags|bag|draw|end|reset
     explorer.ts        /explorer set|add|remove|clear|list
     language.ts        /language
     help.ts            /help
@@ -131,7 +131,7 @@ function resolveUncertainDraws(draws):
 ```
 null ──[/peril start]──► ACTIVE
  ▲                             │
- │    [/peril end]            │ [/peril add, add-threats, add-conditions, add-resignations, reset]
+ │    [/peril end]            │ [/peril add, add-threats, add-conditions, add-resignations, add-negative-tags, reset]
  └──────────────────────────┐  │ [add-label button → type select → modal]
                             │  ▼
                             ACTIVE (tags in Pouch)
@@ -157,6 +157,8 @@ add-label:<channelId>                  — Open type-selection select menu; repl
 add-label-type:<channelId>             — Type selection select menu custom_id; deferUpdate
 add-label-suggest:<channelId>:<type>   — Explorer suggestion select menu custom_id; deferUpdate
 add-label-modal:<channelId>:<type>     — Modal form custom_id; deferReply (ephemeral)
+confirm-add-label:<channelId>          — Confirm pending duplicate-warning label; deferUpdate
+cancel-add-label:<channelId>           — Cancel pending duplicate-warning label; deferUpdate
 ```
 
 All IDs ≤ 100 chars. Example: `push:2:1234567890123456789` = 26 chars ✓

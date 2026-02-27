@@ -426,6 +426,26 @@ export function buildExplorerResignationsAddedEmbed(
     .setTimestamp();
 }
 
+/** Confirmation embed for /peril add-negative-tags. Shows per-category counts. */
+export function buildNegativeTagsAddedEmbed(
+  threatCount: number,
+  conditionCount: number,
+  resignationCount: number,
+  session: PericoloSession,
+  tr: Tr
+): EmbedBuilder {
+  return new EmbedBuilder()
+    .setTitle(`${BOT_TITLE} — ${tr.titleNegativeTagsAdded}`)
+    .setColor(Colors.DarkRed)
+    .setDescription(tr.negativeTagsAdded(threatCount, conditionCount, resignationCount))
+    .addFields({
+      name: tr.fieldBag,
+      value: tr.descBagTotal(session.bag.length),
+      inline: true,
+    })
+    .setTimestamp();
+}
+
 /** Confirmation embed for /peril add-conditions. */
 export function buildExplorerConditionsAddedEmbed(
   count: number,
@@ -441,6 +461,24 @@ export function buildExplorerConditionsAddedEmbed(
       value: tr.descBagTotal(session.bag.length),
       inline: true,
     })
+    .setTimestamp();
+}
+
+/** Warning embed for /peril add duplicate detection. */
+export function buildDuplicateWarningEmbed(warningMessage: string, tr: Tr): EmbedBuilder {
+  return new EmbedBuilder()
+    .setTitle(`${BOT_TITLE} — ${tr.titleDuplicateWarning}`)
+    .setColor(Colors.Yellow)
+    .setDescription(warningMessage)
+    .setTimestamp();
+}
+
+/** Shown after the user clicks Cancel in a duplicate-warning dialog. */
+export function buildAddLabelCancelledEmbed(tr: Tr): EmbedBuilder {
+  return new EmbedBuilder()
+    .setTitle(`${BOT_TITLE} — ${tr.titleDuplicateWarning}`)
+    .setColor(Colors.Grey)
+    .setDescription(tr.addLabelCancelled)
     .setTimestamp();
 }
 

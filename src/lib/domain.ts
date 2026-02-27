@@ -253,6 +253,80 @@ export function hasThreatOrVision(draws: DrawnLabel[]): boolean {
 }
 
 // ---------------------------------------------------------------------------
+// Duplicate-warning similarity helpers
+// ---------------------------------------------------------------------------
+
+/** Normalize text for similarity comparison: lowercase, strip all whitespace. */
+function normalizeForSimilarity(text: string): string {
+  return text.toLowerCase().replace(/\s+/g, '');
+}
+
+/**
+ * Levenshtein edit distance between two already-normalized strings.
+ * O(m * n) time, O(n) space.
+ */
+function levenshteinDistance(a: string, b: string): number {
+  const m = a.length;
+  const n = b.length;
+  if (m === 0) return n;
+  if (n === 0) return m;
+
+  const prev: number[] = Array.from({ length: n + 1 }, (_, i) => i);
+  const curr: number[] = new Array<number>(n + 1).fill(0);
+
+  for (let i = 1; i <= m; i++) {
+    curr[0] = i;
+    for (let j = 1; j <= n; j++) {
+      curr[j] =
+        a[i - 1] === b[j - 1]
+          ? (prev[j - 1] ?? 0)
+          : 1 + Math.min(prev[j - 1] ?? 0, prev[j] ?? 0, curr[j - 1] ?? 0);
+    }
+    for (let j = 0; j <= n; j++) prev[j] = curr[j] ?? 0;
+  }
+
+  return curr[n] ?? 0;
+}
+
+/**
+ * Return true when two label texts are similar enough to warrant a duplicate warning.
+ * Similarity: case-insensitive, spaces ignored, Levenshtein distance ≤ 2.
+ */
+export function isSimilarText(a: string, b: string): boolean {
+  const na = normalizeForSimilarity(a);
+  const nb = normalizeForSimilarity(b);
+  if (!na || !nb) return false;
+  if (na === nb) return true;
+  return levenshteinDistance(na, nb) <= 2;
+}
+
+/**
+ * Find the first label in the bag that is "similar" to the new label being added.
+ *
+ * Rules:
+ * - For `rassegnazione`: any existing rassegnazione in the bag is a match.
+ * - For all other types: text similarity (isSimilarText) against every label
+ *   in the bag that has a text value.
+ *
+ * Returns `undefined` when no similar label is found.
+ */
+export function findSimilarInBag(
+  bag: Label[],
+  newType: LabelType,
+  newText: string
+): Label | undefined {
+  if (newType === 'rassegnazione') {
+    return bag.find((l) => l.type === 'rassegnazione');
+  }
+  if (!newText) return undefined;
+  return bag.find((l) => {
+    const existingText = l.text ?? '';
+    if (!existingText) return false;
+    return isSimilarText(newText, existingText);
+  });
+}
+
+// ---------------------------------------------------------------------------
 // Input sanitization
 // ---------------------------------------------------------------------------
 
