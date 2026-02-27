@@ -408,6 +408,24 @@ export function buildExplorerClearedEmbed(tr: Tr): EmbedBuilder {
     .setTimestamp();
 }
 
+/** Confirmation embed for /peril add-resignations. */
+export function buildExplorerResignationsAddedEmbed(
+  count: number,
+  session: PericoloSession,
+  tr: Tr
+): EmbedBuilder {
+  return new EmbedBuilder()
+    .setTitle(`${BOT_TITLE} — ${tr.titleLabelAdded}`)
+    .setColor(Colors.Green)
+    .setDescription(tr.explorerResignationsAdded(count))
+    .addFields({
+      name: tr.fieldBag,
+      value: tr.descBagTotal(session.bag.length),
+      inline: true,
+    })
+    .setTimestamp();
+}
+
 /** Confirmation embed for /peril add-conditions. */
 export function buildExplorerConditionsAddedEmbed(
   count: number,

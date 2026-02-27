@@ -147,6 +147,9 @@ export const enTranslations: Tr = {
   explorerNoConditions: 'No Conditions found in Explorer profiles for this channel.',
   explorerConditionsAdded: (count) =>
     `${count} Condition${count === 1 ? '' : 's'} added to the Pouch from Explorer profiles.`,
+  errNoResignations: 'No Resignations found in Explorer profiles for this channel.',
+  explorerResignationsAdded: (count) =>
+    `${count} Resignation${count === 1 ? '' : 's'} added to the Pouch from Explorer profiles.`,
 
   // ---- Lang command ----
   langChanged: 'Bot language set to **English** for this channel.',

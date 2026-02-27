@@ -79,6 +79,12 @@ export const explorerCommandData = new SlashCommandBuilder()
           .setRequired(false)
           .setMaxLength(MAX_LABEL_TEXT_LENGTH)
       )
+      .addBooleanOption((opt) =>
+        opt
+          .setName('resignation')
+          .setDescription('Add a Resignation tag (rassegnazione, optional — carries no text)')
+          .setRequired(false)
+      )
   )
   .addSubcommand((sub) =>
     sub
@@ -225,6 +231,10 @@ async function handleSet(
     const text = sanitizeText(rawText.trim());
     if (!text) continue;
     tags.push({ id: randomUUID(), type, text });
+  }
+
+  if (interaction.options.getBoolean('resignation') === true) {
+    tags.push({ id: randomUUID(), type: 'rassegnazione', text: '' });
   }
 
   if (tags.length === 0) {

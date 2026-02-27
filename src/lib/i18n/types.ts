@@ -158,6 +158,9 @@ export interface Tr {
   explorerNoConditions: string;
   /** e.g. "2 Condizioni aggiunte al sacchetto dagli Esploratori." */
   explorerConditionsAdded: (count: number) => string;
+  errNoResignations: string;
+  /** e.g. "3 Rassegnazioni aggiunte al sacchetto dagli Esploratori." */
+  explorerResignationsAdded: (count: number) => string;
 
   // ---- Lang command ----
   langChanged: string;

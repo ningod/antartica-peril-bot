@@ -32,7 +32,7 @@ src/
     i18n/              Translation bundles (it, en) and Tr type
   commands/
     threats.ts         /threats set|list|clear
-    peril.ts           /peril start|add|add-threats|add-conditions|bag|draw|end|reset
+    peril.ts           /peril start|add|add-threats|add-conditions|add-resignations|bag|draw|end|reset
     explorer.ts        /explorer set|add|remove|clear|list
     language.ts        /language
     help.ts            /help
@@ -131,7 +131,7 @@ function resolveUncertainDraws(draws):
 ```
 null ──[/peril start]──► ACTIVE
  ▲                             │
- │    [/peril end]            │ [/peril add, add-threats, add-conditions, reset]
+ │    [/peril end]            │ [/peril add, add-threats, add-conditions, add-resignations, reset]
  └──────────────────────────┐  │ [add-label button → type select → modal]
                             │  ▼
                             ACTIVE (tags in Pouch)

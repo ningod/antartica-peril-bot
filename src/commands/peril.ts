@@ -15,7 +15,7 @@ import {
 } from 'discord.js';
 import { randomUUID } from 'node:crypto';
 import type { IPericoloStore } from '../lib/store-interface.js';
-import type { PericoloSession, ExplorerTag } from '../lib/store-interface.js';
+import type { PericoloSession, ExplorerProfile, ExplorerTag } from '../lib/store-interface.js';
 import type { RateLimiter } from '../lib/ratelimit.js';
 import {
   createLabel,
@@ -36,6 +36,7 @@ import {
   buildSessionEndEmbed,
   buildSessionResetEmbed,
   buildExplorerConditionsAddedEmbed,
+  buildExplorerResignationsAddedEmbed,
   buildErrorEmbed,
 } from '../lib/embeds.js';
 import { tr } from '../lib/i18n/index.js';
@@ -128,6 +129,11 @@ export const perilCommandData = new SlashCommandBuilder()
       .setName('add-conditions')
       .setDescription('Add all Explorer Conditions from this channel to the Pouch (Lead only)')
   )
+  .addSubcommand((sub) =>
+    sub
+      .setName('add-resignations')
+      .setDescription('Add all Explorer Resignations from this channel to the Pouch (Lead only)')
+  )
   .addSubcommand((sub) => sub.setName('bag').setDescription('Show Pouch contents (private)'))
   .addSubcommand((sub) => sub.setName('draw').setDescription('Draw 3 tags from the Pouch'))
   .addSubcommand((sub) => sub.setName('end').setDescription('End the session and show the summary'))
@@ -139,7 +145,14 @@ export const perilCommandData = new SlashCommandBuilder()
 export const SUGGEST_CUSTOM_VALUE = '__custom__';
 
 /** Names of subcommands restricted to the Guide only. */
-const GUIDE_ONLY_SUBS = new Set(['draw', 'add-threats', 'add-conditions', 'end', 'reset']);
+const GUIDE_ONLY_SUBS = new Set([
+  'draw',
+  'add-threats',
+  'add-conditions',
+  'add-resignations',
+  'end',
+  'reset',
+]);
 
 // ---------------------------------------------------------------------------
 // Autocomplete handler
@@ -242,6 +255,8 @@ export async function handlePerilCommand(
     await handleAddThreats(interaction, store, t);
   } else if (sub === 'add-conditions') {
     await handleAddConditions(interaction, store, t);
+  } else if (sub === 'add-resignations') {
+    await handleAddResignations(interaction, store, t);
   } else if (sub === 'bag') {
     await handleBag(interaction, store, t);
   } else if (sub === 'draw') {
@@ -556,9 +571,7 @@ async function handleAdd(
   let posSide: string | undefined;
   let negSide: string | undefined;
 
-  if (labelType === 'rassegnazione') {
-    text = ''; // intentionally empty
-  } else {
+  if (labelType !== 'rassegnazione') {
     const rawText = interaction.options.getString('text');
     if (!rawText?.trim()) {
       await interaction.editReply({
@@ -692,6 +705,56 @@ async function handleAddConditions(
 
   await interaction.editReply({
     embeds: [buildExplorerConditionsAddedEmbed(conditionLabels.length, session, t)],
+    allowedMentions: { parse: [] },
+  });
+}
+
+/**
+ * Collect all rassegnazione tags from a set of Explorer profiles.
+ * Exported for unit testing.
+ */
+export function collectResignationTags(profiles: ExplorerProfile[]): ExplorerTag[] {
+  return profiles.flatMap((p) => p.tags.filter((tag) => tag.type === 'rassegnazione'));
+}
+
+async function handleAddResignations(
+  interaction: ChatInputCommandInteraction,
+  store: IPericoloStore,
+  t: Tr
+): Promise<void> {
+  const session = await requireSession(interaction, store, t);
+  if (!session) return;
+  if (!(await requireGuide(interaction, session, t))) return;
+
+  const profiles = await store.getExplorerProfilesForChannel(interaction.channelId);
+  const resignationTags = collectResignationTags(profiles);
+
+  if (resignationTags.length === 0) {
+    await interaction.editReply({
+      embeds: [buildErrorEmbed(t.errNoResignations, t)],
+      allowedMentions: { parse: [] },
+    });
+    return;
+  }
+
+  for (const tag of resignationTags) {
+    const label = createLabel('rassegnazione', tag.text);
+    session.bag.push(label);
+    session.allLabels.push(label);
+  }
+  session.updatedAt = new Date();
+
+  await store.setSession(session);
+
+  logger.info('explorer-resignations-added-to-bag', {
+    sessionId: session.sessionId,
+    channelId: session.channelId,
+    count: resignationTags.length,
+    userId: interaction.user.id,
+  });
+
+  await interaction.editReply({
+    embeds: [buildExplorerResignationsAddedEmbed(resignationTags.length, session, t)],
     allowedMentions: { parse: [] },
   });
 }

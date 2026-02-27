@@ -150,6 +150,10 @@ export const itTranslations: Tr = {
     'Nessuna Condizione trovata nei profili degli Esploratori di questo canale.',
   explorerConditionsAdded: (count) =>
     `${count} Condizion${count === 1 ? 'e aggiunta' : 'i aggiunte'} al sacchetto dagli Esploratori.`,
+  errNoResignations:
+    'Nessuna Rassegnazione trovata nei profili degli Esploratori di questo canale.',
+  explorerResignationsAdded: (count) =>
+    `${count} Rassegnazion${count === 1 ? 'e aggiunta' : 'i aggiunte'} al sacchetto dagli Esploratori.`,
 
   // ---- Lang command ----
   langChanged: 'Lingua del bot impostata su **Italiano** per questo canale.',
@@ -185,6 +189,11 @@ export const itTranslations: Tr = {
       name: '/peril add-threats',
       value:
         'Aggiungi tutte le etichette del Pool Minacce al sacchetto (nessuna selezione parziale).',
+    },
+    {
+      name: '/peril add-resignations',
+      value:
+        'Aggiungi tutte le Rassegnazioni dai profili Esploratore di questo canale al sacchetto (Guida).',
     },
     {
       name: '/peril bag',
